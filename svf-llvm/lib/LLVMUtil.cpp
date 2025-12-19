@@ -721,6 +721,11 @@ bool LLVMUtil::isStackObj(const Value* val)
     return false;
 }
 
+bool LLVMUtil::isUnsafeInst(const Instruction* inst)
+{
+    return inst->getMetadata("unsafe_inst") != nullptr;
+}
+
 bool LLVMUtil::isNonInstricCallSite(const Instruction* inst)
 {
     bool res = false;

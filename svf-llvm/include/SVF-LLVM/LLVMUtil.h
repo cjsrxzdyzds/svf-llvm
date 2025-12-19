@@ -411,6 +411,9 @@ bool isHeapObj(const Value* val);
 // Check if a given value represents a stack object.
 bool isStackObj(const Value* val);
 
+/// Check if an instruction is marked as unsafe
+bool isUnsafeInst(const Instruction* inst);
+
 /// Whether an instruction is a callsite in the application code, excluding llvm intrinsic calls
 bool isNonInstricCallSite(const Instruction* inst);
 
