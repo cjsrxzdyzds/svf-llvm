@@ -36,6 +36,8 @@
 namespace SVF
 {
 
+class NoAliasChecker;
+
 /*!
  * Pointer analysis implementation which uses bit vector based points-to data structure
  */
@@ -71,7 +73,7 @@ public:
     BVDataPTAImpl(SVFIR* pag, PointerAnalysis::PTATY type, bool alias_check = true);
 
     /// Destructor
-    ~BVDataPTAImpl() override = default;
+    ~BVDataPTAImpl() override;
 
     inline PersistentPointsToCache<PointsTo> &getPtCache()
     {
@@ -210,8 +212,14 @@ protected:
 private:
     /// Points-to data
     std::unique_ptr<PTDataTy> ptD;
+    
+    /// NoAlias Checker
+    NoAliasChecker* noAliasChecker = nullptr;
 
     PersistentPointsToCache<PointsTo> ptCache;
+
+public:
+    void setNoAliasChecker(NoAliasChecker* checker) { noAliasChecker = checker; }
 
 public:
     /// Interface expose to users of our pointer analysis, given Value infos

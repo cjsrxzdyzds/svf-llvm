@@ -414,6 +414,9 @@ bool isStackObj(const Value* val);
 /// Check if an instruction is marked as unsafe
 bool isUnsafeInst(const Instruction* inst);
 
+/// Check if a value has a noalias Attribute
+bool isNoAlias(const Value* val);
+
 /// Whether an instruction is a callsite in the application code, excluding llvm intrinsic calls
 bool isNonInstricCallSite(const Instruction* inst);
 
