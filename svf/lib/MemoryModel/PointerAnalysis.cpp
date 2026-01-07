@@ -196,8 +196,9 @@ void PointerAnalysis::finalize()
     if (Options::FuncPointerPrint())
         printIndCSTargets();
 
-    // BUGFIX: Disabled for in-process LTO to prevent crash
-    //     getCallGraph()->verifyCallGraph();
+    // Verify call graph only for offline analysis (in-process may have incomplete state)
+    if (pag->isBuiltFromFile())
+        getCallGraph()->verifyCallGraph();
 
     if (Options::CallGraphDotGraph())
         getCallGraph()->dump("callgraph_final");
@@ -205,9 +206,12 @@ void PointerAnalysis::finalize()
     if(!pag->isBuiltFromFile() && alias_validation)
         validateTests();
 
-    // BUGFIX: Disabled for in-process LTO to prevent node access crashes
-    // if (!Options::UsePreCompFieldSensitive())
-    //     resetObjFieldSensitive();
+    // Reset field sensitivity only for offline analysis
+    if (pag->isBuiltFromFile())
+    {
+        if (!Options::UsePreCompFieldSensitive())
+            resetObjFieldSensitive();
+    }
 }
 
 /*!

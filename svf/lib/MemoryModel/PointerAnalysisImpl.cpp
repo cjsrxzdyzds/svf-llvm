@@ -94,9 +94,10 @@ BVDataPTAImpl::~BVDataPTAImpl() = default;
 
 void BVDataPTAImpl::finalize()
 {
-    // BUGFIX: normalizePointsTo() has node access issues in some scenarios
-    // but AE tests need it, so we skip only the problematic cleanup within it
-    normalizePointsTo();
+    // BUGFIX: Only run normalization for offline tools (built from file).
+    // In-process LTO (built from memory) has transient node states that cause crashes during cleanup.
+    if (pag->isBuiltFromFile())
+        normalizePointsTo();
     
     // Print statistics (required by CI tests)
     PointerAnalysis::finalize();
@@ -587,8 +588,6 @@ void BVDataPTAImpl::normalizePointsTo()
         }
     }
 
-    // BUGFIX: Skip normalization cleanup for in-process LTO to prevent node access crashes
-    if (false) {
     // remove the collected redundant gep nodes in each pointers's pts
     for (SVFIR::iterator nIter = pag->begin(); nIter != pag->end(); ++nIter)
     {
@@ -615,9 +614,7 @@ void BVDataPTAImpl::normalizePointsTo()
         GepObjVarMap.erase(std::make_pair(base, apOffset));
         memToFieldsMap[base].reset(n);
 
-        // BUGFIX: Commented out to prevent in-process LTO crash
-        //         pag->removeGNode(gepNode);
-    }
+        pag->removeGNode(gepNode);
     }
 }
 
