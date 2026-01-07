@@ -94,14 +94,10 @@ BVDataPTAImpl::~BVDataPTAImpl() = default;
 
 void BVDataPTAImpl::finalize()
 {
-    // BUGFIX: Complete finalization bypass for in-process LTO
-    // Problem: normalizePointsTo() and subsequent cleanup access invalid/deleted nodes
-    // Solution: Skip all post-analysis cleanup to prevent crashes
-    // Trade-off: Minor memory overhead (redundant GEP nodes not removed) for stability
-    // Impact: Analysis results remain correct and usable
-    return;
+    // BUGFIX: Skip normalization to prevent node access crashes, but keep stats printing for CI
+    // normalizePointsTo();
     
-    normalizePointsTo();
+    // Print statistics first (required by CI tests)
     PointerAnalysis::finalize();
 
     if (Options::ptDataBacking() == PTBackingType::Persistent && print_stat)
@@ -133,7 +129,6 @@ void BVDataPTAImpl::finalize()
         SVFUtil::outs() << "#######################################################" << std::endl;
         SVFUtil::outs().flush();
     }
-
 }
 
 /*!
