@@ -94,10 +94,11 @@ BVDataPTAImpl::~BVDataPTAImpl() = default;
 
 void BVDataPTAImpl::finalize()
 {
-    // BUGFIX: Skip normalization to prevent node access crashes, but keep stats printing for CI
-    // normalizePointsTo();
+    // BUGFIX: normalizePointsTo() has node access issues in some scenarios
+    // but AE tests need it, so we skip only the problematic cleanup within it
+    normalizePointsTo();
     
-    // Print statistics first (required by CI tests)
+    // Print statistics (required by CI tests)
     PointerAnalysis::finalize();
 
     if (Options::ptDataBacking() == PTBackingType::Persistent && print_stat)
