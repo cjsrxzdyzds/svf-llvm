@@ -168,7 +168,7 @@ const Type *ObjTypeInference::inferObjType(const Value *var)
 
                         if (var == dst) return inferPointsToType(src);
                         else if (var == src) return inferPointsToType(dst);
-                        else ABORT_MSG("invalid memcpy call");
+                        else continue;
                     }
             }
         }
