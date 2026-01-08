@@ -203,7 +203,7 @@ void PointerAnalysis::finalize()
     if (Options::CallGraphDotGraph())
         getCallGraph()->dump("callgraph_final");
 
-    if(!pag->isBuiltFromFile() && alias_validation)
+    if(pag->isBuiltFromFile() && alias_validation)
         validateTests();
 
     // Reset field sensitivity only for offline analysis
