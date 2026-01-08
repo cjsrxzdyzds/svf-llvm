@@ -200,6 +200,7 @@ void BufOverflowDetector::initExtAPIBufOverflowCheckRules()
     extAPIBufOverflowCheckRules["llvm_memset"] = {{0, 2}};
     extAPIBufOverflowCheckRules["llvm_memset_p0i8_i32"] = {{0, 2}};
     extAPIBufOverflowCheckRules["llvm_memset_p0i8_i64"] = {{0, 2}};
+    extAPIBufOverflowCheckRules["llvm.memset.p0.i64"] = {{0, 2}};
     extAPIBufOverflowCheckRules["llvm_memset_p0_i64"] = {{0, 2}};
     extAPIBufOverflowCheckRules["__memset_chk"] = {{0, 2}};
     extAPIBufOverflowCheckRules["wmemset"] = {{0, 2}};
@@ -367,7 +368,14 @@ void BufOverflowDetector::updateGepObjOffsetFromBase(AbstractState& as, SVF::Add
                 }
                 else
                 {
-                    assert(AbstractState::isInvalidMem(gepAddr) && "GEP object is neither a GepObjVar nor an invalid memory address");
+                    if (SVFUtil::isa<BaseObjVar>(svfir->getGNode(gepObj))) {
+                        // BaseObjVar implies offset 0, so we can ignore it here as it doesn't need to be 
+                        // tracked in the GepObjOffsetFromBase map (which maps GepObj -> Offset).
+                        // This handles the case where gepAddr resolves to the base object itself 
+                        // (e.g. gep pointing to the start of the array/allocation).
+                    } else {
+                        assert(AbstractState::isInvalidMem(gepAddr) && "GEP object is neither a GepObjVar nor an invalid memory address");
+                    }
                 }
             }
         }
